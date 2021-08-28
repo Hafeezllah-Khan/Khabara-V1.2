@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "317976300805",
+    "project_id": "otptest-edb86",
+    "storage_bucket": "otptest-edb86.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317976300805:android:c4f4c15e6292d9f784bb6c",
+        "android_client_info": {
+          "package_name": "com.example.otptest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317976300805-b76jumn394afqh8jq7l7mjo5natth7o6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpHlgId6_9HrFiwZ3d2TXS88s3ihqoYjM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317976300805-b76jumn394afqh8jq7l7mjo5natth7o6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
