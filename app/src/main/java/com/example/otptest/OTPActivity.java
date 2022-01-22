@@ -59,7 +59,7 @@ public class OTPActivity extends AppCompatActivity {
                 if(binding.otpView.getText().toString().isEmpty())
                     Toast.makeText(getApplicationContext(),"Blank Field can not be processed",Toast.LENGTH_LONG).show();
                 else if(binding.otpView.getText().toString().length()!=6)
-                    Toast.makeText(getApplicationContext(),"INvalid OTP",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Invalid OTP",Toast.LENGTH_LONG).show();
                 else
                 {
                     PhoneAuthCredential credential=PhoneAuthProvider.getCredential(verificationCodeBySystem,binding.otpView.getText().toString());

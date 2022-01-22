@@ -242,7 +242,8 @@ public class MainActivity extends AppCompatActivity {
                     while (pCur.moveToNext()) {
                         String phoneNo = pCur.getString(pCur.getColumnIndex(
                                 ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        phoneNo.replace(" ","");
+                        //phoneNo.replace(" ","");
+                        phoneNo = phoneNo.replaceAll("\\s+","");
 //                        if(!String.valueOf(phoneNo.charAt(0)).equals("+"))
 //                            phoneNo = ISOPrefix + phoneNo;
                         phoneList.add(phoneNo);

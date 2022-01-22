@@ -1,15 +1,25 @@
 package com.example.otptest;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.otptest.databinding.ActivityUpdateProfileBinding;
@@ -27,6 +37,11 @@ import com.google.firebase.storage.UploadTask;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class UpdateProfileActivity extends AppCompatActivity {
 
 
@@ -37,6 +52,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
     Uri selectedImage;
     ProgressDialog dialog;
     User user;
+    String currentPhotoPath;
 
 
     @Override
@@ -80,20 +96,19 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 });
 
 
+        if(ContextCompat.checkSelfPermission(UpdateProfileActivity.this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(UpdateProfileActivity.this, new String[]{
+                    Manifest.permission.CAMERA
+            },100);
+        }
 
 
 
         binding.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-
-//                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                //cameraIntent.setAction(Intent.ACTION_CAMERA_BUTTON);
-//                startActivityForResult(cameraIntent,11);
-                intent.setType("image/*");
-                startActivityForResult(intent,45);
+                chooseProfilePicture();
             }
         });
 
@@ -174,14 +189,118 @@ public class UpdateProfileActivity extends AppCompatActivity {
         });
     }
 
+    private void chooseProfilePicture(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProfileActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.alert_dialog_pic,null);
+        builder.setCancelable(true);
+        builder.setView(dialogView);
+
+        AlertDialog alertDialogProfilePicture = builder.create();
+        alertDialogProfilePicture.show();
+
+        ImageView imageViewCamera = dialogView.findViewById(R.id.imageViewCamera);
+        ImageView imageViewGallery = dialogView.findViewById(R.id.imageViewGallery);
+
+        imageViewCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //startActivityForResult(cameraIntent,2);
+                dispatchTakePictureIntent();
+                alertDialogProfilePicture.cancel();
+
+            }
+        });
+
+        imageViewGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(intent,1);
+                alertDialogProfilePicture.cancel();
+            }
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(data != null){
-            if(data.getData() != null){
-                binding.imageView.setImageURI(data.getData());
-                selectedImage = data.getData();
+//        binding.imageView.setImageURI(data.getData());
+//        selectedImage = data.getData();
+
+        //if(data != null) {
+           // if (data.getData() != null) {
+                switch (requestCode) {
+                    case 1:
+                        if(data != null) {
+                             if (data.getData() != null){
+                        Glide.with(UpdateProfileActivity.this).load(data.getData())
+                                .placeholder(R.drawable.avatar)
+                                .into(binding.imageView);
+                        binding.imageView.setImageURI(data.getData());
+                        selectedImage = data.getData();}}
+                        break;
+                    case 2:
+//                        Bundle bundle = data.getExtras();
+//                        Bitmap bitmap = (Bitmap) bundle.get("data");
+////                        Glide.with(UpdateProfileActivity.this).load(bitmap)
+////                                .placeholder(R.drawable.avatar)
+////                                .into(binding.imageView);
+//                        binding.imageView.setImageBitmap(bitmap);
+                        File f = new File(currentPhotoPath);
+                        Glide.with(UpdateProfileActivity.this).load(Uri.fromFile(f))
+                                .placeholder(R.drawable.avatar)
+                                .into(binding.imageView);
+                        //binding.imageView.setImageURI(Uri.fromFile(f));
+                        selectedImage = Uri.fromFile(f);
+                        break;
+                }
+
+            //}
+       // }
+    }
+
+
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, 2);
             }
         }
     }

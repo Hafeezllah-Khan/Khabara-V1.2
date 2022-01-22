@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 import omari.hamza.storyview.StoryView;
+import omari.hamza.storyview.callback.OnStoryChangedCallback;
 import omari.hamza.storyview.callback.StoryClickListeners;
 import omari.hamza.storyview.model.MyStory;
 
@@ -58,6 +59,12 @@ public class TopStatusAdapter extends RecyclerView.Adapter<TopStatusAdapter.TopS
                 }
 
                 new StoryView.Builder(((MainActivity)context).getSupportFragmentManager())
+                        .setOnStoryChangedCallback(new OnStoryChangedCallback() {
+                            @Override
+                            public void storyChanged(int position) {
+                                holder.binding.circularStatusView.setPortionsColor(R.color.grey);
+                            }
+                        })
                         .setStoriesList(myStories) // Required
                         .setStoryDuration(5000) // Default is 2000 Millis (2 Seconds)
                         .setTitleText(userStatus.getName()) // Default is Hidden

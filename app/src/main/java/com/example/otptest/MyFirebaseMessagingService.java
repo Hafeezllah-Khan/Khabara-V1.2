@@ -26,13 +26,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "CHAT");
         builder.setContentTitle(title);
         builder.setContentText(body);
-        builder.setSmallIcon(R.drawable.flag_pakistan);
+        builder.setSmallIcon(R.drawable.ic_send);
         builder.setPriority(Notification.PRIORITY_MAX);
-        //builder.setSound()
-//        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//        builder.setSound(alarmSound);
-//        builder.setDefaults(Notification.DEFAULT_SOUND);
+
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(alarmSound);
+        //builder.setDefaults(Notification.DEFAULT_SOUND);
         //MyApplication.getInstance().getApplicationContext();
+
+//        Uri sond = Uri.parse("android.resource://"
+//                + context.getPackageName() + "/" + R.raw.notification_sound);
 
 //        Notification notification = builder.build();
 //        notification.sound = Uri.parse("android.resource://"
@@ -62,6 +65,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         builder.setContentIntent(pendingIntent);
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        //        Notification notification = builder.build();
+//        notification.sound = Uri.parse("android.resource://"
+//                + this.getPackageName() + "/" + R.raw.notification_sound);
         manager.notify(123,builder.build());
     }
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.otptest.databinding.ActivitySetupProfileBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,6 +31,8 @@ public class SetupProfileActivity extends AppCompatActivity {
     Uri selectedImage;
     ProgressDialog dialog;
 
+    public static final int REQUEST_READ_CONTACTS = 79;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,7 @@ public class SetupProfileActivity extends AppCompatActivity {
         dialog.setCancelable(false);
 
         getSupportActionBar().hide();
+        requestPermission();
 
         binding.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +98,8 @@ public class SetupProfileActivity extends AppCompatActivity {
                                                         dialog.dismiss();
                                                         Intent intent = new Intent(SetupProfileActivity.this, MainActivity.class);
                                                         startActivity(intent);
-                                                        finish();
+                                                        //finish();
+                                                        finishAffinity();
                                                     }
                                                 });
                                     }
@@ -120,7 +125,8 @@ public class SetupProfileActivity extends AppCompatActivity {
                                     dialog.dismiss();
                                     Intent intent = new Intent(SetupProfileActivity.this, MainActivity.class);
                                     startActivity(intent);
-                                    finish();
+                                    //finish();
+                                    finishAffinity();
                                 }
                             });
                 }
@@ -137,6 +143,20 @@ public class SetupProfileActivity extends AppCompatActivity {
                 binding.imageView.setImageURI(data.getData());
                 selectedImage = data.getData();
             }
+        }
+    }
+
+    private void requestPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.READ_CONTACTS)) {
+            // show UI part if you want here to show some rationale !!!
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS},
+                    REQUEST_READ_CONTACTS);
+        }
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.READ_CONTACTS)) {
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS},
+                    REQUEST_READ_CONTACTS);
         }
     }
 }
